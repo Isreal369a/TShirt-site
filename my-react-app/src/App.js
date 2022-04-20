@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { useState } from "react";
 function App() {
@@ -10,10 +9,13 @@ function App() {
 let handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    let response = await fetch("https://localhost:5001/SearchEngineScrapper/GetResult?Url=infotrack.co.uk&Keyword=land%20registry%20search" , {
+    let response = await fetch(`https://localhost:5001/SearchEngineScrapper/GetResult?Url=${url}&Keyword=${keyword}` , {
       method: "GET",
-   
+      headers: {
+        'Content-Type': 'application/json'        
+      },   
     });
+   
     let resJson = await response.json();
     if (response.status === 200) {
       setUrl("");
@@ -43,7 +45,7 @@ return (
         onChange={(e) => setKeyword(e.target.value)}
       />
       
-      <button type="submit">Create</button>
+      <button type="submit">Search</button>
 
       <div className="message">{message ? <p>{message}</p> : null}</div>
     </form>

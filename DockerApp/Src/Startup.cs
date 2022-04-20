@@ -18,6 +18,7 @@ namespace DockerApp
 {
     public class Startup
     {
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -28,10 +29,19 @@ namespace DockerApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                                  policy =>
+                                  {
+                                      policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+                                  });
+            });
+
+            services.AddScoped<IResultPageCounter, ResultPageCounter>();
+            services.AddScoped<IResultPageParser, AngleSharpHtmlParser>();
             services.AddSingleton<ISearchUrlBuilder, SearchUrlBuilder>();
-            services.AddHttpClient<ISearchEngineHttpHandler, SearchEngineHttpHandler>();
-            services.AddScoped<IHtmlParser, HtmlParser>();
-            services.AddScoped<IPageScrapper, GooglePageScrapper>();
+            services.AddHttpClient<ISearchEngineHttpHandler, SearchEngineHttpHandler>();                        
             
             services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<SearchRequestValidator>());
             services.AddControllers();
@@ -54,6 +64,8 @@ namespace DockerApp
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
